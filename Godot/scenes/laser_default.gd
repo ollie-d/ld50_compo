@@ -39,16 +39,19 @@ func fire():
 		firing = true
 		cooling_down = false
 		can_fire = false
+		#$Sprite/Beam.visible = true
 		$Fire_Timer.start()
 	
 	
 func cooldown():
 	# Time to recharge
+	$Sprite.modulate = Color(1, 0, 0, 1)
 	$Sprite.frame = 0
 	$Beam.disabled = true
 	firing = false
 	cooling_down = true
 	can_fire = false
+	#$Sprite/Beam.visible = false
 	$Cooldown_Timer.start()
 	
 
@@ -104,9 +107,10 @@ func kill():
 
 
 func _on_Cooldown_Timer_timeout():
+	$Sprite.modulate = Color(1, 1, 1, 1)
 	can_fire = true
 	cooling_down = false
-
+	
 
 func _on_Laser_body_entered(body):
 	if "Asteroid" in body.get_name().substr(0, 10):

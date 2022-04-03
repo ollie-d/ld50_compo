@@ -119,7 +119,7 @@ func _on_Spawn_Timer_timeout():
 		vel = Vector2(rng.randf_range(-20.0, 20.0), rng.randf_range(-20.0, 20.0))
 	
 	asteroid.init(vel)
-	add_child(asteroid)
+	$Asteroids.add_child(asteroid)
 	asteroid.position = spawn_location.position
 	#print(spawn_location.position)
 	#print(asteroid.position)
@@ -128,3 +128,13 @@ func _on_Spawn_Timer_timeout():
 	num_asteroids_spawned = num_asteroids_spawned + 1
 	
 	
+
+
+func _on_Planet_game_over():
+	print('Show score screen now')
+
+
+func _on_Planet_planet_hit():
+	$Spawn_Timer.stop()
+	for a in $Asteroids.get_children():
+		a.destroy()

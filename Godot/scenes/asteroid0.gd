@@ -13,6 +13,8 @@ var explosion_type = 0
 
 var is_exploding = false
 
+var rotation_speed := 1
+
 onready var explosion := get_node("Explosion0")
 
 # Called when the node enters the scene tree for the first time.
@@ -31,6 +33,8 @@ func _ready():
 		explosion = get_node("Explosion1")
 		
 	explosion.frame = 0
+	
+	rotation_speed = int(rng.randi_range(1, 2) * sign(rng.randf_range(-1, 1)))
 
 
 func init(vec):
@@ -59,7 +63,7 @@ func _physics_process(delta):
 
 
 func _on_Rotation_Timer_timeout():
-	self.rotate(deg2rad(1))
+	self.rotate(deg2rad(rotation_speed))
 	
 	
 func destroy():

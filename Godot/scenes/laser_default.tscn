@@ -231,6 +231,8 @@ animations = [ {
 [node name="Laser" type="Area2D"]
 script = ExtResource( 2 )
 
+[node name="CanvasLayer" type="CanvasLayer" parent="."]
+
 [node name="Beam" type="CollisionShape2D" parent="."]
 position = Vector2( 250, 0 )
 shape = SubResource( 1 )
@@ -257,6 +259,23 @@ position = Vector2( 238, 0 )
 rotation = 1.5708
 texture = ExtResource( 1 )
 hframes = 2
+
+[node name="Beam" type="CPUParticles2D" parent="Sprite"]
+visible = false
+position = Vector2( 0.000793457, 220 )
+rotation = 3.88859
+emitting = false
+amount = 800
+lifetime = 120.0
+speed_scale = 37.41
+explosiveness = 0.09
+initial_velocity = 3.0
+initial_velocity_random = 0.84
+angular_velocity = 0.29
+angular_velocity_random = 0.44
+orbit_velocity = 1.0
+linear_accel = -76.23
+color = Color( 1, 0, 0, 1 )
 
 [node name="Explosion" type="AnimatedSprite" parent="."]
 visible = false

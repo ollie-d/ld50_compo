@@ -11,8 +11,13 @@ config_version=4
 [application]
 
 config/name="Ld 50"
-run/main_scene="res://scenes/main.tscn"
+run/main_scene="res://scenes/menu.tscn"
 config/icon="res://icon.png"
+
+[autoload]
+
+MusicController="*res://scenes/autoloads/MusicController.tscn"
+Global="*res://scenes/autoloads/Global.tscn"
 
 [display]
 
