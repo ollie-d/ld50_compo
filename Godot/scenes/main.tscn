@@ -1,12 +1,23 @@
-[gd_scene load_steps=5 format=2]
+[gd_scene load_steps=6 format=2]
 
 [ext_resource path="res://scenes/planet.tscn" type="PackedScene" id=1]
 [ext_resource path="res://scenes/laser_default.tscn" type="PackedScene" id=2]
 [ext_resource path="res://scenes/main.gd" type="Script" id=3]
 [ext_resource path="res://scenes/asteroid0.tscn" type="PackedScene" id=4]
 
-[node name="Space" type="Node2D"]
+[sub_resource type="Curve2D" id=1]
+_data = {
+"points": PoolVector2Array( 0, 0, 0, 0, -16, -16, 0, 0, 0, 0, 496, -16, 0, 0, 0, 0, 496, 288, 0, 0, 0, 0, -16, 288, 0, 0, 0, 0, -16, -16 )
+}
+
+[node name="Space" type="Node"]
 script = ExtResource( 3 )
+asteroid_scene = ExtResource( 4 )
+
+[node name="Space" type="ColorRect" parent="."]
+margin_right = 480.0
+margin_bottom = 272.0
+color = Color( 0, 0, 0, 1 )
 
 [node name="Planet" parent="." instance=ExtResource( 1 )]
 position = Vector2( 240, 135 )
@@ -25,5 +36,17 @@ position = Vector2( 310, 65 )
 [node name="SE_Laser" parent="Lasers" instance=ExtResource( 2 )]
 position = Vector2( 310, 205 )
 
-[node name="KinematicBody2D" parent="." instance=ExtResource( 4 )]
-position = Vector2( 60, 46 )
+[node name="Spawn_Timer" type="Timer" parent="."]
+wait_time = 0.3
+autostart = true
+
+[node name="Spawner" type="Path2D" parent="."]
+curve = SubResource( 1 )
+
+[node name="Loc" type="PathFollow2D" parent="Spawner"]
+position = Vector2( -16, -16 )
+
+[node name="Asteroid" parent="." instance=ExtResource( 4 )]
+position = Vector2( 24, 24 )
+
+[connection signal="timeout" from="Spawn_Timer" to="." method="_on_Spawn_Timer_timeout"]

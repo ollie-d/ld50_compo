@@ -9,12 +9,16 @@ const FIRE_TIME := 0.3   # second(s); length of effect
 const SM := 0.3 # smoothing factor for laser following mouse
 
 var selected := false
+var alive := true
 var firing := false
 var cooling_down := false
 var can_fire := true
 
 var smoothed_mouse_pos: Vector2
 
+var explosion_frame := -1
+var max_frame := 52
+var is_exploding := false
 
 # Called when the node enters the scene tree for the first time.
 func _ready():
@@ -52,22 +56,51 @@ func destroy(body):
 	# Send destruction signal to affected asteroids
 	body.destroy()
 
-
+	
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 func _process(delta):
-	smoothed_mouse_pos = lerp(smoothed_mouse_pos, get_global_mouse_position(), SM)
-	if selected:
-		#look_at(get_global_mouse_position())
-		look_at(smoothed_mouse_pos)
-		
-		# Check for the fire input in order to shoot beam
-		if Input.is_action_pressed("ui_accept"):
-			fire()
+	if alive:
+		smoothed_mouse_pos = lerp(smoothed_mouse_pos, get_global_mouse_position(), SM)
+		if selected:
+			#look_at(get_global_mouse_position())
+			look_at(smoothed_mouse_pos)
+			
+			# Check for the fire input in order to shoot beam
+			if Input.is_action_pressed("ui_accept"):
+				fire()
+	else:
+		explosion_frame = explosion_frame + 1
+		if explosion_frame <= max_frame:
+			$Explosion.frame = explosion_frame
+		else:
+			self.visible = false
+			is_exploding = false
 
 
 func _on_Fire_Timer_timeout():
 	print('On fire timedout')
 	cooldown()
+
+
+func select(tf):
+	if alive:
+		if tf:
+			selected = true
+			$Selected.visible = true
+		else:
+			selected = false
+			$Selected.visible = false
+	return alive
+
+
+func kill():
+	alive = false
+	is_exploding = true
+	$Explosion.visible = true
+	$Sprite.visible = false
+	$Selected.visible = false
+	$Beam.set_deferred("disabled", true)
+	$Area2D/Body.set_deferred("disabled", true)
 
 
 func _on_Cooldown_Timer_timeout():
@@ -76,5 +109,12 @@ func _on_Cooldown_Timer_timeout():
 
 
 func _on_Laser_body_entered(body):
-	if body.get_name() == "KinematicBody2D":
+	if "Asteroid" in body.get_name().substr(0, 10):
 		destroy(body)
+
+
+func _on_Area2D_body_entered(body):
+	kill()
+	if "Asteroid" in body.get_name().substr(0, 10):
+		destroy(body)
+	
