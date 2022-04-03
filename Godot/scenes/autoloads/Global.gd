@@ -2,6 +2,9 @@ extends Node
 
 var score_file = "user://highscore.save"
 var highscore
+var score
+var show_instructions = false
+var asteroids_killed := 0
 
 func load_score():
 	var f = File.new()
@@ -21,3 +24,6 @@ func save_score():
 func _ready():
 	print('Loaded score')
 	load_score()
+	
+func asteroid_killed():
+	asteroids_killed = asteroids_killed + 1

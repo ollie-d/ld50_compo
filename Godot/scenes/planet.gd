@@ -32,6 +32,9 @@ func _ready():
 	$Continents0.modulate = continent_colors[cont_i]
 	$Continents1.modulate = continent_colors[cont_i]
 	
+	# Determine a random axial tilt
+	$Planet.rotate(rad2deg(rng.randf_range(-7.0, 7.0)))
+	
 
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
@@ -40,7 +43,11 @@ func _process(delta):
 
 
 func kill():
+	if not MusicController.muted:
+		$sfx.play()
 	emit_signal("planet_hit")
+	$Continents0.visible = false
+	$Continents1.visible = false
 	$Explosion.visible = true
 	$Explosion_Timer.start()
 
@@ -69,8 +76,6 @@ func _on_Explosion_Timer_timeout():
 		# This is when the explosion covers the planet so we can hide it
 		$Planet.visible = false
 		$Rotation_Timer.stop()
-		$Continents0.visible = false
-		$Continents1.visible = false
 	else:
 		$Explosion.frame = frame_count
 

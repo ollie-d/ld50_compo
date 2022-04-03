@@ -1,0 +1,21 @@
+[remap]
+
+importer="wav"
+type="AudioStreamSample"
+path="res://.import/planet_explosion000.wav-ff180c3d50e98f376b242424cb664801.sample"
+
+[deps]
+
+source_file="res://assets/sounds/planet_explosion000.wav"
+dest_files=[ "res://.import/planet_explosion000.wav-ff180c3d50e98f376b242424cb664801.sample" ]
+
+[params]
+
+force/8_bit=false
+force/mono=false
+force/max_rate=false
+force/max_rate_hz=44100
+edit/trim=false
+edit/normalize=false
+edit/loop=false
+compress/mode=0

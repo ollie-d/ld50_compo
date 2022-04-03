@@ -14,8 +14,14 @@ var num_asteroids_spawned := 0
 # Hold selected laser in a 'reference' variable
 onready var selected_laser := get_node("Lasers/NW_Laser")
 
+# Asteroid spawn rates (increase with score/time)
+var asteroid_rates = [0.5, 0.4, 0.3, 0.2, 0.1]
 
 var rng = RandomNumberGenerator.new()
+
+var score := 0
+
+var game_over := false
 
 func _ready():
 	randomize()
@@ -28,9 +34,12 @@ func _ready():
 	
 	# Select laser 0 (NW) by default
 	select_laser(0)
+
+	# Start score timer
+	$Score_Timer.start()
 	
-	# Stall asteroid
-	$Asteroid.init(Vector2(0, 0))
+	# Set spawn timer to easiest
+	$Spawn_Timer.wait_time = asteroid_rates[0]
 	
 	
 
@@ -49,10 +58,8 @@ func select_laser(x):
 		push_error("Laser should be between 0 and 3 inclusive.")
 		
 	# Set all lasers to selected = false first
-	$Lasers/NW_Laser.select(false)
-	$Lasers/NE_Laser.select(false)
-	$Lasers/SW_Laser.select(false)
-	$Lasers/SE_Laser.select(false)
+	for l in $Lasers.get_children():
+		l.select(false)
 	
 	# Now handle selecting the correct laser
 	if x == 0:
@@ -81,22 +88,38 @@ func select_laser(x):
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 func _process(delta):
-	# Handle laser selection
-	if Input.is_action_just_pressed("ui_up"):
-		# 1 key on keyboard
-		select_laser(0)
-	elif Input.is_action_just_pressed("ui_down"):
-		# 2 key on keyboard
-		select_laser(1)
-	elif Input.is_action_just_pressed("ui_left"):
-		# 3 key on keyboard
-		select_laser(2)
-	elif Input.is_action_just_pressed("ui_right"):
-		# 4 key on keyboard
-		select_laser(3)
-	
-	# Handle asteroid spawning
-	
+	if not game_over:
+		# Update score
+		$HBox0/Score.text = "Score: {s}".format({"s":score})
+		
+		# Update timer rates based on score
+		var timer = 0.1
+		if score <= 100:
+			timer = asteroid_rates[0]
+		elif score > 100 and score <= 200:
+			timer = asteroid_rates[1]
+		elif score > 200 and score <= 300:
+			timer = asteroid_rates[2]
+		elif score > 300 and score <= 400:
+			timer = asteroid_rates[3]
+		else:
+			timer = asteroid_rates[4]
+		
+		$Spawn_Timer.wait_time = timer
+		
+		# Handle laser selection
+		if Input.is_action_just_pressed("ui_up"):
+			# 1 key on keyboard
+			select_laser(0)
+		elif Input.is_action_just_pressed("ui_down"):
+			# 2 key on keyboard
+			select_laser(1)
+		elif Input.is_action_just_pressed("ui_left"):
+			# 3 key on keyboard
+			select_laser(2)
+		elif Input.is_action_just_pressed("ui_right"):
+			# 4 key on keyboard
+			select_laser(3)
 
 
 func _on_Spawn_Timer_timeout():
@@ -126,15 +149,58 @@ func _on_Spawn_Timer_timeout():
 	#asteroid.move_and_collide(velocity.rotated(direction))
 	
 	num_asteroids_spawned = num_asteroids_spawned + 1
-	
-	
 
 
 func _on_Planet_game_over():
-	print('Show score screen now')
+	# Save high score if we beat our previous
+	Global.score = score
+	if score > Global.highscore:
+		Global.highscore = score
+		Global.save_score()
+	
+	# Get to end screen
+	var end = load("res://scenes/end.tscn")
+	get_parent().add_child(end.instance())
+	queue_free()
 
 
 func _on_Planet_planet_hit():
+	game_over = true
 	$Spawn_Timer.stop()
+	$Score_Timer.stop()
+	
+	# Kill all lasers
+	for l in $Lasers.get_children():
+		l.kill()
+		$Lasers.remove_child(l)
+		l.remove()
+		
+	# Destroy all asteroids
 	for a in $Asteroids.get_children():
+		#$Asteroid.remove_child(a)
 		a.destroy()
+
+
+func _on_Score_Timer_timeout():
+	score = score + 1
+	Global.score = score
+
+
+func _on_NW_Laser_laser_death():
+	$CanvasLayer/L1.visible = false
+	#$Lasers.remove_child($Lasers/NW_Laser)
+
+
+func _on_NE_Laser_laser_death():
+	$CanvasLayer/L2.visible = false
+	#$Lasers.remove_child($Lasers/NE_Laser)
+
+
+func _on_SW_Laser_laser_death():
+	$CanvasLayer/L3.visible = false
+	#$Lasers.remove_child($Lasers/SW_Laser)
+
+
+func _on_SE_Laser_laser_death():
+	$CanvasLayer/L4.visible = false
+	#$Lasers.remove_child($Lasers/SE_Laser)

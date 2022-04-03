@@ -20,9 +20,19 @@ var explosion_frame := -1
 var max_frame := 52
 var is_exploding := false
 
+var animation_dt := 0.03
+var delta_sum := 0.0
+
+signal laser_death
+
+var rng
+
 # Called when the node enters the scene tree for the first time.
 func _ready():
 	# Set timer times (both oneshots)
+	rng = RandomNumberGenerator.new()
+	rng.randomize()
+	randomize()
 	$Fire_Timer.wait_time = FIRE_TIME
 	$Cooldown_Timer.wait_time = COOLDOWN_TIME
 
@@ -34,6 +44,10 @@ func point_at(x, y):
 func fire():
 	# Fire yer laser
 	if not cooling_down and not firing:
+		# Play random laser sound
+		if not MusicController.muted:
+			$sfx.get_child(rng.randi_range(0, 1)).play()
+		
 		$Sprite.frame = 1
 		$Beam.disabled = false
 		firing = true
@@ -62,6 +76,7 @@ func destroy(body):
 	
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 func _process(delta):
+	delta_sum += delta
 	if alive:
 		smoothed_mouse_pos = lerp(smoothed_mouse_pos, get_global_mouse_position(), SM)
 		if selected:
@@ -72,16 +87,17 @@ func _process(delta):
 			if Input.is_action_pressed("ui_accept"):
 				fire()
 	else:
-		explosion_frame = explosion_frame + 1
-		if explosion_frame <= max_frame:
-			$Explosion.frame = explosion_frame
-		else:
-			self.visible = false
-			is_exploding = false
+		if delta_sum >= animation_dt:
+			delta_sum = 0
+			explosion_frame = explosion_frame + 1
+			if explosion_frame <= max_frame:
+				$Explosion.frame = explosion_frame
+			else:
+				self.visible = false
+				is_exploding = false
 
 
 func _on_Fire_Timer_timeout():
-	print('On fire timedout')
 	cooldown()
 
 
@@ -104,6 +120,13 @@ func kill():
 	$Selected.visible = false
 	$Beam.set_deferred("disabled", true)
 	$Area2D/Body.set_deferred("disabled", true)
+	
+	# Tell main scene we've died
+	emit_signal("laser_death")
+	
+
+func remove():
+	self.queue_free()
 
 
 func _on_Cooldown_Timer_timeout():
@@ -122,3 +145,7 @@ func _on_Area2D_body_entered(body):
 	if "Asteroid" in body.get_name().substr(0, 10):
 		destroy(body)
 	
+
+
+func _on_Removal_Timer_timeout():
+	self.queue_free()

@@ -15,12 +15,17 @@ var is_exploding = false
 
 var rotation_speed := 1
 
+var animation_dt := 0.01
+var delta_sum := 0.0
+
+var rng
+
 onready var explosion := get_node("Explosion0")
 
 # Called when the node enters the scene tree for the first time.
 func _ready():
 	# Determine explosion type
-	var rng = RandomNumberGenerator.new()
+	rng = RandomNumberGenerator.new()
 	rng.randomize()
 	randomize()
 	
@@ -50,16 +55,19 @@ func _process(_delta):
 
 
 func _physics_process(delta):
+	delta_sum += delta
 	if not is_exploding:
 		var c = move_and_collide(velocity * delta)
 		if c:
 			velocity = velocity.bounce(c.normal)
 	else:
-		explosion_frame = explosion_frame + 1
-		if explosion_frame <= max_frame:
-			explosion.frame = explosion_frame
-		else:
-			remove()
+		if delta_sum >= animation_dt:
+			delta_sum = 0
+			explosion_frame = explosion_frame + 1
+			if explosion_frame <= max_frame:
+				explosion.frame = explosion_frame
+			else:
+				remove()
 
 
 func _on_Rotation_Timer_timeout():
@@ -67,10 +75,14 @@ func _on_Rotation_Timer_timeout():
 	
 	
 func destroy():
+	if not MusicController.muted:
+		$sfx.get_child(rng.randi_range(0, 2)).play()
 	is_exploding = true
 	$Sprite.visible = false
 	$Body.call_deferred("set", "disabled", true)
 	explosion.visible = true
+	$Removal_Timer.start()
+	Global.asteroid_killed() # increase kill count
 	
 
 func remove():
@@ -82,3 +94,7 @@ func _on_VisibilityNotifier2D_screen_exited():
 	self.queue_free()
 
 
+
+
+func _on_Removal_Timer_timeout():
+	remove()

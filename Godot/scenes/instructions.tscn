@@ -1,0 +1,135 @@
+[gd_scene load_steps=11 format=2]
+
+[ext_resource path="res://assets/fonts/PressStart2P.ttf" type="DynamicFontData" id=1]
+[ext_resource path="res://assets/fonts/16bfZX.ttf" type="DynamicFontData" id=2]
+[ext_resource path="res://assets/sprites/starry_background.png" type="Texture" id=3]
+[ext_resource path="res://assets/sprites/buttons/generic_button.png" type="Texture" id=4]
+[ext_resource path="res://scenes/instructions.gd" type="Script" id=5]
+[ext_resource path="res://assets/fonts/rainyhearts.ttf" type="DynamicFontData" id=6]
+[ext_resource path="res://assets/sprites/asteroid000.png" type="Texture" id=7]
+
+[sub_resource type="DynamicFont" id=1]
+font_data = ExtResource( 1 )
+
+[sub_resource type="DynamicFont" id=2]
+font_data = ExtResource( 2 )
+
+[sub_resource type="DynamicFont" id=4]
+size = 8
+font_data = ExtResource( 6 )
+
+[node name="Node" type="Node"]
+script = ExtResource( 5 )
+
+[node name="BG" type="Sprite" parent="."]
+position = Vector2( 240, 135 )
+texture = ExtResource( 3 )
+__meta__ = {
+"_edit_lock_": true
+}
+
+[node name="Center0" type="CenterContainer" parent="."]
+anchor_right = 1.0
+anchor_bottom = 1.0
+__meta__ = {
+"_edit_lock_": true
+}
+
+[node name="V0" type="VBoxContainer" parent="Center0"]
+margin_left = 90.0
+margin_top = 25.0
+margin_right = 390.0
+margin_bottom = 244.0
+
+[node name="C1" type="CenterContainer" parent="Center0/V0"]
+margin_right = 300.0
+margin_bottom = 16.0
+
+[node name="Header" type="Label" parent="Center0/V0/C1"]
+margin_left = 54.0
+margin_right = 246.0
+margin_bottom = 16.0
+custom_fonts/font = SubResource( 1 )
+text = "Instructions"
+
+[node name="C2" type="CenterContainer" parent="Center0/V0"]
+margin_top = 20.0
+margin_right = 300.0
+margin_bottom = 20.0
+
+[node name="Instructions" type="Label" parent="Center0/V0"]
+margin_top = 24.0
+margin_right = 300.0
+margin_bottom = 91.0
+custom_fonts/font = SubResource( 2 )
+text = "Use the keys 1, 2, 3, and 4 to select your laser.
+Fire using Space/Enter/Mouse Left.
+Drag your beam with the mouse to slice asteroids.
+Once a laser is gone, it's gone.
+Buy as much time for the planetary beings."
+
+[node name="C3" type="CenterContainer" parent="Center0/V0"]
+margin_top = 95.0
+margin_right = 300.0
+margin_bottom = 130.0
+
+[node name="Header2" type="Label" parent="Center0/V0/C3"]
+margin_left = 94.0
+margin_right = 206.0
+margin_bottom = 35.0
+custom_fonts/font = SubResource( 1 )
+text = "
+Credits"
+
+[node name="C4" type="CenterContainer" parent="Center0/V0"]
+margin_top = 134.0
+margin_right = 300.0
+margin_bottom = 173.0
+
+[node name="Credits" type="Label" parent="Center0/V0/C4"]
+margin_left = 7.0
+margin_right = 293.0
+margin_bottom = 39.0
+custom_fonts/font = SubResource( 2 )
+text = "Made by Ollie D'Amico for Ludum Dare 50, Compo
+Please see itch.io or LD page for more info.
+"
+
+[node name="C5" type="CenterContainer" parent="Center0/V0"]
+margin_top = 177.0
+margin_right = 300.0
+margin_bottom = 219.0
+
+[node name="Home" type="TextureButton" parent="Center0/V0/C5"]
+margin_left = 78.0
+margin_right = 222.0
+margin_bottom = 42.0
+texture_normal = ExtResource( 4 )
+
+[node name="Label" type="Label" parent="Center0/V0/C5/Home"]
+margin_left = 40.0
+margin_top = -7.0
+margin_right = 104.0
+margin_bottom = 28.0
+custom_fonts/font = SubResource( 1 )
+text = "
+Home"
+valign = 1
+
+[node name="Clear_Hiscores" type="TextureButton" parent="."]
+margin_left = 440.0
+margin_top = 248.0
+margin_right = 457.0
+margin_bottom = 264.0
+texture_normal = ExtResource( 7 )
+
+[node name="Label" type="Label" parent="Clear_Hiscores"]
+margin_left = -24.0
+margin_top = -8.0
+margin_right = 36.0
+custom_fonts/font = SubResource( 4 )
+text = "Clear Highscore"
+align = 1
+
+[connection signal="pressed" from="Center0/V0/C5/Home" to="." method="_on_Home_pressed"]
+[connection signal="pressed" from="Clear_Hiscores" to="." method="_on_Clear_Hiscores_pressed"]
