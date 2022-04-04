@@ -43,7 +43,7 @@ func point_at(x, y):
 
 func fire():
 	# Fire yer laser
-	if not cooling_down and not firing:
+	if not cooling_down and not firing and can_fire:
 		# Play random laser sound
 		if not MusicController.muted:
 			$sfx.get_child(rng.randi_range(0, 1)).play()
@@ -84,7 +84,7 @@ func _process(delta):
 			look_at(smoothed_mouse_pos)
 			
 			# Check for the fire input in order to shoot beam
-			if Input.is_action_pressed("ui_accept"):
+			if Input.is_action_just_pressed("ui_accept"):
 				fire()
 	else:
 		if delta_sum >= animation_dt:
@@ -99,6 +99,7 @@ func _process(delta):
 
 func _on_Fire_Timer_timeout():
 	cooldown()
+	#mouse_release()
 
 
 func select(tf):
@@ -110,6 +111,13 @@ func select(tf):
 			selected = false
 			$Selected.visible = false
 	return alive
+
+func mouse_release():
+	# Need to simulate mouse release because chrome is dumb
+	var ev = InputEventMouseButton.new()
+	ev.button_index = 1 # left mb
+	ev.pressed = false
+	get_tree().input_event(ev)
 
 
 func kill():

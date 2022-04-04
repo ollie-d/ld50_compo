@@ -18,10 +18,7 @@ func stop_music():
 
 
 func play_music():
-	$Music.stream = music
-	$Music.play()
-	muted = false
-	save_music_state()
+	$Timer.start()
 
 
 func load_music_state():
@@ -40,3 +37,10 @@ func save_music_state():
 	f.store_var(muted)
 	f.close()
 
+
+
+func _on_Timer_timeout():
+	$Music.stream = music
+	$Music.play()
+	muted = false
+	save_music_state()

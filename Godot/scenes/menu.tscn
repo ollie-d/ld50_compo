@@ -98,6 +98,8 @@ margin_right = 88.0
 margin_bottom = 42.0
 texture_normal = ExtResource( 4 )
 
+[node name="Sprite" type="Sprite" parent="Center0"]
+
 [connection signal="pressed" from="Center0/V0/C2/Play" to="." method="_on_Play_pressed"]
 [connection signal="pressed" from="Center0/V0/C3/H0/Sound" to="." method="_on_Sound_pressed"]
 [connection signal="pressed" from="Center0/V0/C3/H0/Credits" to="." method="_on_Credits_pressed"]
