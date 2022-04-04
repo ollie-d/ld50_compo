@@ -103,7 +103,7 @@ func _process(delta):
 		elif score > 300 and score <= 400:
 			timer = asteroid_rates[3]
 		else:
-			timer = asteroid_rates[4]
+			timer = asteroid_rates[3] # fastest rate is anti-fun
 		
 		$Spawn_Timer.wait_time = timer
 		
